@@ -20,10 +20,28 @@ async function startCall() {
   ws.onmessage = async (event) => {
     const data = JSON.parse(event.data);
     const from = data.from;
+    if (data.type === "online-users") {
+      document.getElementById("userList").innerHTML = "";
+      data.users.forEach(user => {
+        addUserToList(user);
+      });
+    }
+
 
     if (data.type === "user-joined") {
+      addUserToList(data.username);
       await createConnection(data.username, true);
     }
+
+    function addUserToList(username) {
+      if (document.getElementById(`user-${username}`)) return;
+
+      const li = document.createElement("li");
+      li.id = `user-${username}`;
+      li.textContent = `🟢 ${username} está online`;
+      document.getElementById("userList").appendChild(li);
+    }
+
 
     if (data.type === "offer") {
       await createConnection(from, false);
@@ -51,6 +69,7 @@ async function startCall() {
       if (connections[data.username]) {
         connections[data.username].close();
         delete connections[data.username];
+        document.getElementById(`user-${data.username}`)?.remove();
         document.getElementById(`audio-${data.username}`)?.remove();
       }
     }

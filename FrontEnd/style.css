@@ -70,3 +70,23 @@ audio {
   margin-top: 30px;
   display: none; /* Oculta o elemento visual */
 }
+#onlineUsers {
+    border: 1px solid #ccc;
+    padding: 10px;
+    max-width: 300px;
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+  }
+
+  #onlineUsers > h3 {
+    color: rgba(0, 0, 0, 0.733);
+    font-size: 1em;
+  }
+
+  #userList li {
+    list-style: none;
+    padding: 4px;
+    font-weight: 500;
+    color: green;
+  }

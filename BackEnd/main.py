@@ -13,6 +13,14 @@ app.add_middleware(
 )
 
 clients: Dict[str, WebSocket] = {}
+# ✅ Função global para enviar a lista de usuários online pra todo mundo
+async def broadcast_online_users():
+    user_list = list(clients.keys())
+    for user, client in clients.items():
+        await client.send_json({
+            "type": "online-users",
+            "users": user_list
+        })
 
 @app.websocket("/ws/{username}")
 async def websocket_endpoint(websocket: WebSocket, username: str):
@@ -22,12 +30,18 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
 
     await websocket.accept()
     clients[username] = websocket
+    
     print(f"{username} conectou.")
+    
+    await broadcast_online_users()
 
-    # Notifica os outros que um novo usuário entrou
+    
+
+
+    # Notifica todos (inclusive o próprio) que esse usuário entrou
     for user, client in clients.items():
-        if user != username:
-            await client.send_json({"type": "user-joined", "username": username})
+        await client.send_json({"type": "user-joined", "username": username})
+
 
     try:
         while True:
