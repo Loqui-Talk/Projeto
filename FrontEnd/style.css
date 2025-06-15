@@ -1,0 +1,72 @@
+/* Reset básico */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 50px;
+  font-size: 2.5rem;
+  color: #00e5ff;
+}
+
+label {
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  width: 250px;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  margin: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:first-of-type {
+  background-color: #00c853;
+  color: white;
+}
+
+button:first-of-type:hover {
+  background-color: #009624;
+}
+
+button:last-of-type {
+  background-color: #d32f2f;
+  color: white;
+}
+
+button:last-of-type:hover {
+  background-color: #9a0007;
+}
+
+audio {
+  margin-top: 30px;
+  display: none; /* Oculta o elemento visual */
+}
