@@ -1,11 +1,9 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
 import uvicorn
 
 app = FastAPI()
 
-# Libera o frontend acessar o backend (CORS)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,22 +12,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-clients = []
+clients = {}
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
+@app.websocket("/ws/{username}")
+async def websocket_endpoint(websocket: WebSocket, username: str):
+    if not username or len(username.strip()) == 0:
+        await websocket.close(code=4001)
+        return
+
     await websocket.accept()
-    clients.append(websocket)
+    clients[username] = websocket
+    print(f"{username} conectou.")
 
     try:
         while True:
             data = await websocket.receive_text()
-            # Repassa a mensagem para o outro cliente
-            for client in clients:
+            # Envia a mensagem para todos os outros usuários
+            for user, client in clients.items():
                 if client != websocket:
                     await client.send_text(data)
     except WebSocketDisconnect:
-        clients.remove(websocket)
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+        clients.pop(username, None)
+        print(f"{username} desconectou.")

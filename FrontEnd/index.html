@@ -1,14 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit Talk</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Unity Talk</title>
 </head>
 <body>
-    <h1>WebRTC Áudio Call</h1>
-  <button onclick="startCall()">Iniciar Chamada</button>
+  <h1>Boas Vindas ao Unity Talk</h1>
+
+  <label>Seu nome:</label>
+  <input id="username" type="text" placeholder="Digite seu nome" />
+  <br><br>
+
+  <button onclick="startCall()">Entrar na chamada</button>
+  <button onclick="leaveCall()">Sair da chamada</button>
+
   <audio id="remoteAudio" autoplay></audio>
 
   <script src="script.js"></script>
