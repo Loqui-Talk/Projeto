@@ -1,6 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn
+from typing import Dict
 
 app = FastAPI()
 
@@ -12,7 +12,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-clients = {}
+clients: Dict[str, WebSocket] = {}
 
 @app.websocket("/ws/{username}")
 async def websocket_endpoint(websocket: WebSocket, username: str):
@@ -24,13 +24,31 @@ async def websocket_endpoint(websocket: WebSocket, username: str):
     clients[username] = websocket
     print(f"{username} conectou.")
 
+    # Notifica os outros que um novo usuário entrou
+    for user, client in clients.items():
+        if user != username:
+            await client.send_json({"type": "user-joined", "username": username})
+
     try:
         while True:
-            data = await websocket.receive_text()
-            # Envia a mensagem para todos os outros usuários
-            for user, client in clients.items():
-                if client != websocket:
-                    await client.send_text(data)
+            data = await websocket.receive_json()
+            target = data.get("target")
+            sender = username
+            data["from"] = sender
+
+            # Se for uma mensagem para alguém específico (offer, answer, candidate)
+            if target and target in clients:
+                await clients[target].send_json(data)
+            else:
+                # Mensagens de broadcast (ex: notificações)
+                for user, client in clients.items():
+                    if user != sender:
+                        await client.send_json(data)
+
     except WebSocketDisconnect:
         clients.pop(username, None)
         print(f"{username} desconectou.")
+
+        # Notifica os outros que esse usuário saiu
+        for user, client in clients.items():
+            await client.send_json({"type": "user-left", "username": username})
